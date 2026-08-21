@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 /**
- * Starts the Floppy chatbot and echoes commands until the user exits.
+ * Starts the Floppy chatbot and stores tasks until the user exits.
  */
 public class Floppy {
     /**
@@ -23,6 +23,9 @@ public class Floppy {
         System.out.println(divider);
 
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             System.out.println(divider);
@@ -33,7 +36,15 @@ public class Floppy {
                 break;
             }
 
-            System.out.println(" " + command);
+            if (command.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = command;
+                taskCount++;
+                System.out.println(" added: " + command);
+            }
             System.out.println(divider);
         }
         scanner.close();
