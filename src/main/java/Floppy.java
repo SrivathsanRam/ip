@@ -57,25 +57,25 @@ public class Floppy {
                 Task task = null;
 
                 if (command.startsWith("todo ")) {
-                    task = new Todo(command.substring(5));
+                    task = new Todo(command.substring("todo ".length()));
                 } else if (command.startsWith("deadline ")) {
                     int byIndex = command.indexOf(" /by ");
-                    String description = command.substring(9, byIndex);
-                    String by = command.substring(byIndex + 5);
+                    String description = command.substring("deadline ".length(), byIndex);
+                    String by = command.substring(byIndex + " /by ".length());
                     task = new Deadline(description, by);
                 } else if (command.startsWith("event ")) {
                     int fromIndex = command.indexOf(" /from ");
-                    int toIndex = command.indexOf(" /to ");
-                    String description = command.substring(6, fromIndex);
-                    String from = command.substring(fromIndex + 7, toIndex);
-                    String to = command.substring(toIndex + 5);
+                    int toIndex = command.indexOf(" /to ", fromIndex);
+                    String description = command.substring("event ".length(), fromIndex);
+                    String from = command.substring(fromIndex + " /from ".length(), toIndex);
+                    String to = command.substring(toIndex + " /to ".length());
                     task = new Event(description, from, to);
                 }
 
                 if (task != null) {
                     tasks[taskCount] = task;
                     taskCount++;
-                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("Okies! I've added this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + taskCount + " tasks in the list.");
                 }
