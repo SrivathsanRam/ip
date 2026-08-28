@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,8 +85,10 @@ public class Storage {
         try {
             Task task = switch (fields[0]) {
                 case "T" -> requireFieldCount(fields, 3, new Todo(fields[2]));
-                case "D" -> requireFieldCount(fields, 4, new Deadline(fields[2], fields[3]));
-                case "E" -> requireFieldCount(fields, 5, new Event(fields[2], fields[3], fields[4]));
+                case "D" -> requireFieldCount(fields, 4,
+                        new Deadline(fields[2], LocalDate.parse(fields[3])));
+                case "E" -> requireFieldCount(fields, 5,
+                        new Event(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4])));
                 default -> throw new IllegalArgumentException();
             };
             if (fields[1].equals("1")) {
@@ -126,9 +129,9 @@ public class Storage {
                 + FIELD_SEPARATOR + task.getDescription();
         return switch (task.getTaskType()) {
             case TODO -> commonFields;
-            case DEADLINE -> commonFields + FIELD_SEPARATOR + ((Deadline) task).getDueTime();
-            case EVENT -> commonFields + FIELD_SEPARATOR + ((Event) task).getStartTime()
-                    + FIELD_SEPARATOR + ((Event) task).getEndTime();
+            case DEADLINE -> commonFields + FIELD_SEPARATOR + ((Deadline) task).getDueDate();
+            case EVENT -> commonFields + FIELD_SEPARATOR + ((Event) task).getStartDate()
+                    + FIELD_SEPARATOR + ((Event) task).getEndDate();
         };
     }
 }

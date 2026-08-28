@@ -1,33 +1,35 @@
 package floppy;
 
+import java.time.LocalDate;
+
 /**
  * Represents a task that must be completed by a given time.
  */
 public class Deadline extends Task {
-    private final String dueTime;
+    private final LocalDate dueDate;
 
     /**
-     * Creates a deadline with the specified description and due time.
+     * Creates a deadline with the specified description and due date.
      *
      * @param description Description of the deadline.
-     * @param dueTime Due time of the deadline.
+     * @param dueDate Due date of the deadline.
      */
-    public Deadline(String description, String dueTime) {
+    public Deadline(String description, LocalDate dueDate) {
         super(description, TaskType.DEADLINE);
-        this.dueTime = dueTime;
+        this.dueDate = dueDate;
     }
 
     /**
-     * Returns the due time as entered by the user.
+     * Returns the due date.
      *
-     * @return Due time of this deadline.
+     * @return Due date of this deadline.
      */
-    public String getDueTime() {
-        return dueTime;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " (by: " + dueTime + ")";
+        return super.toString() + " (by: " + dueDate.format(DISPLAY_DATE_FORMAT) + ")";
     }
 }

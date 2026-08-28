@@ -1,5 +1,7 @@
 package floppy;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -152,11 +154,11 @@ public class Floppy {
             throw new FloppyException("Use: deadline DESCRIPTION /by TIME.");
         }
         String description = command.substring("deadline ".length(), byIndex).trim();
-        String dueTime = command.substring(byIndex + " /by ".length()).trim();
-        if (description.isEmpty() || dueTime.isEmpty()) {
-            throw new FloppyException("A deadline needs both a description and due time.");
+        String dueDateText = command.substring(byIndex + " /by ".length()).trim();
+        if (description.isEmpty() || dueDateText.isEmpty()) {
+            throw new FloppyException("A deadline needs both a description and due date.");
         }
-        return new Deadline(description, dueTime);
+        return new Deadline(description, parseDate(dueDateText));
     }
 
     /**
@@ -173,11 +175,31 @@ public class Floppy {
             throw new FloppyException("Use: event DESCRIPTION /from START /to END.");
         }
         String description = command.substring("event ".length(), fromIndex).trim();
-        String startTime = command.substring(fromIndex + " /from ".length(), toIndex).trim();
-        String endTime = command.substring(toIndex + " /to ".length()).trim();
-        if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
-            throw new FloppyException("An event needs a description, start time, and end time.");
+        String startDateText = command.substring(fromIndex + " /from ".length(), toIndex).trim();
+        String endDateText = command.substring(toIndex + " /to ".length()).trim();
+        if (description.isEmpty() || startDateText.isEmpty() || endDateText.isEmpty()) {
+            throw new FloppyException("An event needs a description, start date, and end date.");
         }
-        return new Event(description, startTime, endTime);
+        LocalDate startDate = parseDate(startDateText);
+        LocalDate endDate = parseDate(endDateText);
+        if (endDate.isBefore(startDate)) {
+            throw new FloppyException("The event end date cannot be before its start date.");
+        }
+        return new Event(description, startDate, endDate);
+    }
+
+    /**
+     * Parses an ISO date entered in {@code yyyy-MM-dd} format.
+     *
+     * @param dateText Date supplied by the user.
+     * @return Parsed date.
+     * @throws FloppyException If the date is not a valid ISO date.
+     */
+    private static LocalDate parseDate(String dateText) throws FloppyException {
+        try {
+            return LocalDate.parse(dateText);
+        } catch (DateTimeParseException exception) {
+            throw new FloppyException("Use dates in yyyy-MM-dd format, such as 2026-08-28.");
+        }
     }
 }

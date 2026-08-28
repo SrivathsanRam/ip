@@ -1,45 +1,48 @@
 package floppy;
 
+import java.time.LocalDate;
+
 /**
  * Represents a task that occurs over a period of time.
  */
 public class Event extends Task {
-    private final String startTime;
-    private final String endTime;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
 
     /**
-     * Creates an event with the specified description and time period.
+     * Creates an event with the specified description and date range.
      *
      * @param description Description of the event.
-     * @param startTime Start time of the event.
-     * @param endTime End time of the event.
+     * @param startDate Start date of the event.
+     * @param endDate End date of the event.
      */
-    public Event(String description, String startTime, String endTime) {
+    public Event(String description, LocalDate startDate, LocalDate endDate) {
         super(description, TaskType.EVENT);
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     /**
-     * Returns the event's start time as entered by the user.
+     * Returns the event's start date.
      *
-     * @return Start time of this event.
+     * @return Start date of this event.
      */
-    public String getStartTime() {
-        return startTime;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
     /**
-     * Returns the event's end time as entered by the user.
+     * Returns the event's end date.
      *
-     * @return End time of this event.
+     * @return End date of this event.
      */
-    public String getEndTime() {
-        return endTime;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " (from: " + startTime + " to: " + endTime + ")";
+        return super.toString() + " (from: " + startDate.format(DISPLAY_DATE_FORMAT)
+                + " to: " + endDate.format(DISPLAY_DATE_FORMAT) + ")";
     }
 }

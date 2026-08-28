@@ -1,9 +1,16 @@
 package floppy;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 /**
  * Represents a task and its completion status.
  */
 public abstract class Task {
+    /** Standard format used to display task dates. */
+    protected static final DateTimeFormatter DISPLAY_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+
     /** Description of the task. */
     protected String description;
 
