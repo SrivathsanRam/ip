@@ -1,5 +1,6 @@
 package floppy;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -25,8 +26,7 @@ public class Floppy {
         System.out.println(divider);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -41,32 +41,34 @@ public class Floppy {
             try {
                 if (command.equals("list")) {
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                 } else if (command.startsWith("mark")) {
-                    int taskIndex = parseTaskIndex(command, "mark", taskCount);
-                    Task task = tasks[taskIndex];
+                    int taskIndex = parseTaskIndex(command, "mark", tasks.size());
+                    Task task = tasks.get(taskIndex);
                     task.markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + task);
                 } else if (command.startsWith("unmark")) {
-                    int taskIndex = parseTaskIndex(command, "unmark", taskCount);
-                    Task task = tasks[taskIndex];
+                    int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
+                    Task task = tasks.get(taskIndex);
                     task.markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + task);
+                } else if (command.startsWith("delete")) {
+                    int taskIndex = parseTaskIndex(command, "delete", tasks.size());
+                    Task task = tasks.remove(taskIndex);
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + task);
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else {
                     Task task = createTask(command);
 
-                    if (taskCount >= tasks.length) {
-                        throw new FloppyException("The task list is full.");
-                    }
-                    tasks[taskCount] = task;
-                    taskCount++;
+                    tasks.add(task);
                     System.out.println("Okies! I've added this task:");
                     System.out.println("   " + task);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 }
             } catch (FloppyException exception) {
                 System.out.println(" Oops! " + exception.getMessage());
