@@ -1,205 +1,99 @@
 package floppy;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 /**
- * Starts the Floppy chatbot and stores tasks until the user exits.
+ * Coordinates command parsing, task operations, storage, and user interaction.
  */
 public class Floppy {
+    private static final String DATA_FILE_PATH = "data/floppy.txt";
+
+    private final Parser parser;
+    private final Storage storage;
+    private final TaskList taskList;
+    private final Ui ui;
+
     /**
-     * Runs the chatbot's command loop.
+     * Creates a chatbot backed by the default task data file.
+     */
+    public Floppy() {
+        parser = new Parser();
+        storage = new Storage(DATA_FILE_PATH);
+        ui = new Ui();
+
+        TaskList loadedTasks;
+        try {
+            loadedTasks = new TaskList(storage.load());
+        } catch (FloppyException exception) {
+            ui.showError(exception.getMessage());
+            loadedTasks = new TaskList();
+        }
+        taskList = loadedTasks;
+    }
+
+    /**
+     * Runs the chatbot until the user exits or closes the input stream.
+     */
+    public void run() {
+        ui.showWelcome();
+        while (ui.hasNextCommand()) {
+            String commandText = ui.readCommand();
+            ui.showLine();
+            try {
+                Command command = parser.parse(commandText);
+                if (command.getCommandType() == CommandType.BYE) {
+                    ui.showGoodbye();
+                    ui.showLine();
+                    break;
+                }
+                execute(command);
+            } catch (FloppyException exception) {
+                ui.showError(exception.getMessage());
+            }
+            ui.showLine();
+        }
+        ui.close();
+    }
+
+    /**
+     * Starts the chatbot application.
      *
      * @param args Command-line arguments; not used.
      */
     public static void main(String[] args) {
-        String divider = "____________________________________________________________";
-        String banner = " _____ _                         \n"
-                + "|  ___| | ___  _ __  _ __  _   _\n"
-                + "| |_  | |/ _ \\| '_ \\| '_ \\| | | |\n"
-                + "|  _| | | (_) | |_) | |_) | |_| |\n"
-                + "|_|   |_|\\___/| .__/| .__/ \\__, |\n"
-                + "               |_|   |_|    |___/ \n";
-        System.out.println(banner);
-        System.out.println("Hello! I'm Floppy.");
-        System.out.println("What can I do for you?");
-        System.out.println(divider);
+        new Floppy().run();
+    }
 
-        Scanner scanner = new Scanner(System.in);
-        Storage storage = new Storage("data/floppy.txt");
-        ArrayList<Task> tasks;
-        try {
-            tasks = storage.load();
-        } catch (FloppyException exception) {
-            System.out.println(" Oops! " + exception.getMessage());
-            tasks = new ArrayList<>();
-        }
-
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
-            System.out.println(divider);
-
-            if (command.equals("bye")) {
-                System.out.println(" Bye. Hope to see you again soon!");
-                System.out.println(divider);
-                break;
+    /**
+     * Executes a parsed command and persists every task-list change.
+     *
+     * @param command Parsed command to execute.
+     * @throws FloppyException If the task operation or save fails.
+     */
+    private void execute(Command command) throws FloppyException {
+        switch (command.getCommandType()) {
+            case LIST -> ui.showTaskList(taskList.getTasks());
+            case MARK -> {
+                Task task = taskList.mark(command.getTaskIndex());
+                storage.save(taskList.getTasks());
+                ui.showTaskMarked(task);
             }
-
-            try {
-                if (command.equals("list")) {
-                    System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
-                    }
-                } else if (command.startsWith("mark")) {
-                    int taskIndex = parseTaskIndex(command, "mark", tasks.size());
-                    Task task = tasks.get(taskIndex);
-                    task.markAsDone();
-                    storage.save(tasks);
-                    System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + task);
-                } else if (command.startsWith("unmark")) {
-                    int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
-                    Task task = tasks.get(taskIndex);
-                    task.markAsNotDone();
-                    storage.save(tasks);
-                    System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + task);
-                } else if (command.startsWith("delete")) {
-                    int taskIndex = parseTaskIndex(command, "delete", tasks.size());
-                    Task task = tasks.remove(taskIndex);
-                    storage.save(tasks);
-                    System.out.println(" Noted. I've removed this task:");
-                    System.out.println("   " + task);
-                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                } else {
-                    Task task = createTask(command);
-
-                    tasks.add(task);
-                    storage.save(tasks);
-                    System.out.println("Okies! I've added this task:");
-                    System.out.println("   " + task);
-                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                }
-            } catch (FloppyException exception) {
-                System.out.println(" Oops! " + exception.getMessage());
+            case UNMARK -> {
+                Task task = taskList.unmark(command.getTaskIndex());
+                storage.save(taskList.getTasks());
+                ui.showTaskUnmarked(task);
             }
-            System.out.println(divider);
-        }
-        scanner.close();
-    }
-
-    /**
-     * Parses and validates the task number in a mark or unmark command.
-     *
-     * @param command Full command entered by the user.
-     * @param commandWord Command word that precedes the task number.
-     * @param taskCount Number of tasks currently stored.
-     * @return Zero-based index of the selected task.
-     * @throws FloppyException If the task number is missing, invalid, or out of range.
-     */
-    private static int parseTaskIndex(String command, String commandWord, int taskCount)
-            throws FloppyException {
-        String argument = command.substring(commandWord.length()).trim();
-        try {
-            int taskIndex = Integer.parseInt(argument) - 1;
-            if (taskIndex < 0 || taskIndex >= taskCount) {
-                throw new FloppyException("Choose a task number shown in the list.");
+            case DELETE -> {
+                Task task = taskList.delete(command.getTaskIndex());
+                storage.save(taskList.getTasks());
+                ui.showTaskDeleted(task, taskList.size());
             }
-            return taskIndex;
-        } catch (NumberFormatException exception) {
-            throw new FloppyException("Give me a valid task number after " + commandWord + ".");
-        }
-    }
-
-    /**
-     * Creates a task from a todo, deadline, or event command.
-     *
-     * @param command Full command entered by the user.
-     * @return Task represented by the command.
-     * @throws FloppyException If the command is unknown or required details are missing.
-     */
-    private static Task createTask(String command) throws FloppyException {
-        if (command.equals("todo")) {
-            throw new FloppyException("The todo description cannot be empty.");
-        }
-        if (command.startsWith("todo ")) {
-            String description = command.substring("todo ".length()).trim();
-            if (description.isEmpty()) {
-                throw new FloppyException("The todo description cannot be empty.");
+            case ADD -> {
+                Task task = command.getTask();
+                taskList.add(task);
+                storage.save(taskList.getTasks());
+                ui.showTaskAdded(task, taskList.size());
             }
-            return new Todo(description);
-        }
-        if (command.startsWith("deadline")) {
-            return createDeadline(command);
-        }
-        if (command.startsWith("event")) {
-            return createEvent(command);
-        }
-        throw new FloppyException("I don't recognise that command.");
-    }
-
-    /**
-     * Creates a deadline from a command containing a description and due time.
-     *
-     * @param command Full deadline command.
-     * @return Deadline represented by the command.
-     * @throws FloppyException If the description or due time is missing.
-     */
-    private static Deadline createDeadline(String command) throws FloppyException {
-        int byIndex = command.indexOf(" /by ");
-        if (!command.startsWith("deadline ") || byIndex < 0) {
-            throw new FloppyException("Use: deadline DESCRIPTION /by TIME.");
-        }
-        String description = command.substring("deadline ".length(), byIndex).trim();
-        String dueDateText = command.substring(byIndex + " /by ".length()).trim();
-        if (description.isEmpty() || dueDateText.isEmpty()) {
-            throw new FloppyException("A deadline needs both a description and due date.");
-        }
-        return new Deadline(description, parseDate(dueDateText));
-    }
-
-    /**
-     * Creates an event from a command containing a description and time period.
-     *
-     * @param command Full event command.
-     * @return Event represented by the command.
-     * @throws FloppyException If the description, start time, or end time is missing.
-     */
-    private static Event createEvent(String command) throws FloppyException {
-        int fromIndex = command.indexOf(" /from ");
-        int toIndex = command.indexOf(" /to ", Math.max(fromIndex, 0));
-        if (!command.startsWith("event ") || fromIndex < 0 || toIndex < 0) {
-            throw new FloppyException("Use: event DESCRIPTION /from START /to END.");
-        }
-        String description = command.substring("event ".length(), fromIndex).trim();
-        String startDateText = command.substring(fromIndex + " /from ".length(), toIndex).trim();
-        String endDateText = command.substring(toIndex + " /to ".length()).trim();
-        if (description.isEmpty() || startDateText.isEmpty() || endDateText.isEmpty()) {
-            throw new FloppyException("An event needs a description, start date, and end date.");
-        }
-        LocalDate startDate = parseDate(startDateText);
-        LocalDate endDate = parseDate(endDateText);
-        if (endDate.isBefore(startDate)) {
-            throw new FloppyException("The event end date cannot be before its start date.");
-        }
-        return new Event(description, startDate, endDate);
-    }
-
-    /**
-     * Parses an ISO date entered in {@code yyyy-MM-dd} format.
-     *
-     * @param dateText Date supplied by the user.
-     * @return Parsed date.
-     * @throws FloppyException If the date is not a valid ISO date.
-     */
-    private static LocalDate parseDate(String dateText) throws FloppyException {
-        try {
-            return LocalDate.parse(dateText);
-        } catch (DateTimeParseException exception) {
-            throw new FloppyException("Use dates in yyyy-MM-dd format, such as 2026-08-28.");
+            case BYE -> throw new IllegalStateException("Exit commands are handled by the run loop.");
+            default -> throw new IllegalStateException("Unsupported command type.");
         }
     }
 }
