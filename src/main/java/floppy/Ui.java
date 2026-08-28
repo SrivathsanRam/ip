@@ -80,6 +80,25 @@ public class Ui implements AutoCloseable {
      */
     public void showTaskList(List<Task> tasks) {
         output.println(" Here are the tasks in your list:");
+        showNumberedTasks(tasks);
+    }
+
+    /**
+     * Displays tasks that matched a find command.
+     *
+     * @param tasks Matching tasks to display.
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        output.println(" Here are the matching tasks in your list:");
+        showNumberedTasks(tasks);
+    }
+
+    /**
+     * Displays tasks with one-based numbers relative to the supplied list.
+     *
+     * @param tasks Tasks to display.
+     */
+    private void showNumberedTasks(List<Task> tasks) {
         for (int i = 0; i < tasks.size(); i++) {
             output.println(" " + (i + 1) + "." + tasks.get(i));
         }

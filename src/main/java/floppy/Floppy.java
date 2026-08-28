@@ -86,6 +86,7 @@ public class Floppy {
                 storage.save(taskList.getTasks());
                 ui.showTaskDeleted(task, taskList.size());
             }
+            case FIND -> ui.showMatchingTasks(taskList.find(command.getKeyword()));
             case ADD -> {
                 Task task = command.getTask();
                 taskList.add(task);
