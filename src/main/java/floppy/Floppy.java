@@ -26,7 +26,14 @@ public class Floppy {
         System.out.println(divider);
 
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage("data/floppy.txt");
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (FloppyException exception) {
+            System.out.println(" Oops! " + exception.getMessage());
+            tasks = new ArrayList<>();
+        }
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -48,17 +55,20 @@ public class Floppy {
                     int taskIndex = parseTaskIndex(command, "mark", tasks.size());
                     Task task = tasks.get(taskIndex);
                     task.markAsDone();
+                    storage.save(tasks);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + task);
                 } else if (command.startsWith("unmark")) {
                     int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
                     Task task = tasks.get(taskIndex);
                     task.markAsNotDone();
+                    storage.save(tasks);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + task);
                 } else if (command.startsWith("delete")) {
                     int taskIndex = parseTaskIndex(command, "delete", tasks.size());
                     Task task = tasks.remove(taskIndex);
+                    storage.save(tasks);
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -66,6 +76,7 @@ public class Floppy {
                     Task task = createTask(command);
 
                     tasks.add(task);
+                    storage.save(tasks);
                     System.out.println("Okies! I've added this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");

@@ -20,6 +20,24 @@ public class Event extends Task {
         this.endTime = endTime;
     }
 
+    /**
+     * Returns the event's start time as entered by the user.
+     *
+     * @return Start time of this event.
+     */
+    public String getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Returns the event's end time as entered by the user.
+     *
+     * @return End time of this event.
+     */
+    public String getEndTime() {
+        return endTime;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " (from: " + startTime + " to: " + endTime + ")";

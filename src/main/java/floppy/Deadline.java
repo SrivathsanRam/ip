@@ -17,6 +17,15 @@ public class Deadline extends Task {
         this.dueTime = dueTime;
     }
 
+    /**
+     * Returns the due time as entered by the user.
+     *
+     * @return Due time of this deadline.
+     */
+    public String getDueTime() {
+        return dueTime;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " (by: " + dueTime + ")";
