@@ -1,3 +1,5 @@
+package floppy;
+
 import java.util.Scanner;
 
 /**
@@ -7,7 +9,7 @@ public class Floppy {
     /**
      * Runs the chatbot's command loop.
      *
-     * @param args command-line arguments; not used
+     * @param args Command-line arguments; not used.
      */
     public static void main(String[] args) {
         String divider = "____________________________________________________________";
@@ -61,15 +63,15 @@ public class Floppy {
                 } else if (command.startsWith("deadline ")) {
                     int byIndex = command.indexOf(" /by ");
                     String description = command.substring("deadline ".length(), byIndex);
-                    String by = command.substring(byIndex + " /by ".length());
-                    task = new Deadline(description, by);
+                    String dueTime = command.substring(byIndex + " /by ".length());
+                    task = new Deadline(description, dueTime);
                 } else if (command.startsWith("event ")) {
                     int fromIndex = command.indexOf(" /from ");
                     int toIndex = command.indexOf(" /to ", fromIndex);
                     String description = command.substring("event ".length(), fromIndex);
-                    String from = command.substring(fromIndex + " /from ".length(), toIndex);
-                    String to = command.substring(toIndex + " /to ".length());
-                    task = new Event(description, from, to);
+                    String startTime = command.substring(fromIndex + " /from ".length(), toIndex);
+                    String endTime = command.substring(toIndex + " /to ".length());
+                    task = new Event(description, startTime, endTime);
                 }
 
                 if (task != null) {
