@@ -3,21 +3,25 @@ package floppy;
 /**
  * Represents a task and its completion status.
  */
-public class Task {
+public abstract class Task {
     /** Description of the task. */
     protected String description;
 
     /** Whether the task has been completed. */
     protected boolean isDone;
 
+    private final TaskType taskType;
+
     /**
-     * Creates a task with the specified description.
+     * Creates a task with the specified description and type.
      *
      * @param description Description of the task.
+     * @param taskType Category of the task.
      */
-    public Task(String description) {
+    protected Task(String description, TaskType taskType) {
         this.description = description;
         this.isDone = false;
+        this.taskType = taskType;
     }
 
     /**
@@ -45,6 +49,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        return "[" + taskType.getSymbol() + "][" + getStatusIcon() + "] " + description;
     }
 }

@@ -13,12 +13,12 @@ public class Deadline extends Task {
      * @param dueTime Due time of the deadline.
      */
     public Deadline(String description, String dueTime) {
-        super(description);
+        super(description, TaskType.DEADLINE);
         this.dueTime = dueTime;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + dueTime + ")";
+        return super.toString() + " (by: " + dueTime + ")";
     }
 }
