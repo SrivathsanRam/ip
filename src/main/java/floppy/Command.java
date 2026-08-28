@@ -9,6 +9,7 @@ public class Command {
     private final CommandType commandType;
     private final int taskIndex;
     private final Task task;
+    private final String keyword;
 
     /**
      * Creates a command that has no task argument.
@@ -16,7 +17,7 @@ public class Command {
      * @param commandType Operation represented by the command.
      */
     public Command(CommandType commandType) {
-        this(commandType, NO_TASK_INDEX, null);
+        this(commandType, NO_TASK_INDEX, null, null);
     }
 
     /**
@@ -26,7 +27,7 @@ public class Command {
      * @param taskIndex Zero-based task index supplied by the user.
      */
     public Command(CommandType commandType, int taskIndex) {
-        this(commandType, taskIndex, null);
+        this(commandType, taskIndex, null, null);
     }
 
     /**
@@ -35,13 +36,23 @@ public class Command {
      * @param task Task to add.
      */
     public Command(Task task) {
-        this(CommandType.ADD, NO_TASK_INDEX, task);
+        this(CommandType.ADD, NO_TASK_INDEX, task, null);
     }
 
-    private Command(CommandType commandType, int taskIndex, Task task) {
+    /**
+     * Creates a command that searches task descriptions for a keyword.
+     *
+     * @param keyword Keyword to find.
+     */
+    public Command(String keyword) {
+        this(CommandType.FIND, NO_TASK_INDEX, null, keyword);
+    }
+
+    private Command(CommandType commandType, int taskIndex, Task task, String keyword) {
         this.commandType = commandType;
         this.taskIndex = taskIndex;
         this.task = task;
+        this.keyword = keyword;
     }
 
     /**
@@ -69,5 +80,14 @@ public class Command {
      */
     public Task getTask() {
         return task;
+    }
+
+    /**
+     * Returns the keyword carried by a find command.
+     *
+     * @return Search keyword.
+     */
+    public String getKeyword() {
+        return keyword;
     }
 }

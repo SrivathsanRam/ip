@@ -58,4 +58,17 @@ class ParserTest {
     void parse_unknownCommand_throwsException() {
         assertThrows(FloppyException.class, () -> parser.parse("dance"));
     }
+
+    @Test
+    void parse_findCommand_returnsKeyword() throws FloppyException {
+        Command command = parser.parse("find project book");
+
+        assertEquals(CommandType.FIND, command.getCommandType());
+        assertEquals("project book", command.getKeyword());
+    }
+
+    @Test
+    void parse_findWithoutKeyword_throwsException() {
+        assertThrows(FloppyException.class, () -> parser.parse("find"));
+    }
 }

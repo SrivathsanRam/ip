@@ -31,6 +31,16 @@ public class Parser {
         if (command.startsWith("delete")) {
             return new Command(CommandType.DELETE, parseTaskIndex(command, "delete"));
         }
+        if (command.equals("find")) {
+            throw new FloppyException("Give me a keyword to find.");
+        }
+        if (command.startsWith("find ")) {
+            String keyword = command.substring("find ".length()).trim();
+            if (keyword.isEmpty()) {
+                throw new FloppyException("Give me a keyword to find.");
+            }
+            return new Command(keyword);
+        }
         return new Command(parseTask(command));
     }
 
