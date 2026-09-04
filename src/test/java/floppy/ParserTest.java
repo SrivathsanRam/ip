@@ -36,14 +36,14 @@ class ParserTest {
 
     @Test
     void parse_eventWithReversedDates_throwsException() {
-        assertThrows(FloppyException.class,
-                () -> parser.parse("event camp /from 2026-09-03 /to 2026-09-01"));
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "event camp /from 2026-09-03 /to 2026-09-01"));
     }
 
     @Test
     void parse_invalidDate_throwsException() {
-        assertThrows(FloppyException.class,
-                () -> parser.parse("deadline return book /by 2026-02-30"));
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "deadline return book /by 2026-02-30"));
     }
 
     @Test
