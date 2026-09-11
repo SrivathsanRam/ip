@@ -22,6 +22,22 @@ checkstyle {
 
 dependencies {
     String jUnitVersion = '5.14.4'
+    String javaFxVersion = '17.0.7'
+
+    implementation(
+            "org.openjfx:javafx-base:${javaFxVersion}:win",
+            "org.openjfx:javafx-base:${javaFxVersion}:mac",
+            "org.openjfx:javafx-base:${javaFxVersion}:linux",
+            "org.openjfx:javafx-controls:${javaFxVersion}:win",
+            "org.openjfx:javafx-controls:${javaFxVersion}:mac",
+            "org.openjfx:javafx-controls:${javaFxVersion}:linux",
+            "org.openjfx:javafx-fxml:${javaFxVersion}:win",
+            "org.openjfx:javafx-fxml:${javaFxVersion}:mac",
+            "org.openjfx:javafx-fxml:${javaFxVersion}:linux",
+            "org.openjfx:javafx-graphics:${javaFxVersion}:win",
+            "org.openjfx:javafx-graphics:${javaFxVersion}:mac",
+            "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
+    )
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -44,7 +60,7 @@ test {
 }
 
 application {
-    mainClass = 'floppy.Floppy'
+    mainClass = 'floppy.Launcher'
 }
 
 jar {
