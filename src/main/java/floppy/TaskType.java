@@ -6,7 +6,8 @@ package floppy;
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),
-    EVENT("E");
+    EVENT("E"),
+    PERIOD("P");
 
     private final String symbol;
 
