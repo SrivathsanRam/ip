@@ -41,6 +41,22 @@ class ParserTest {
     }
 
     @Test
+    void parse_periodCommand_returnsPeriodTask() throws FloppyException {
+        Command command = parser.parse(
+                "period collect certificate /from 2026-09-15 /to 2026-09-25");
+
+        PeriodTask periodTask = assertInstanceOf(PeriodTask.class, command.getTask());
+        assertEquals(LocalDate.of(2026, 9, 15), periodTask.getStartDate());
+        assertEquals(LocalDate.of(2026, 9, 25), periodTask.getEndDate());
+    }
+
+    @Test
+    void parse_periodWithReversedDates_throwsException() {
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "period collect certificate /from 2026-09-25 /to 2026-09-15"));
+    }
+
+    @Test
     void parse_invalidDate_throwsException() {
         assertThrows(FloppyException.class, () -> parser.parse(
                 "deadline return book /by 2026-02-30"));

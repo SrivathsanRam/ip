@@ -1,30 +1,40 @@
 # Floppy User Guide
 
-// Update the title above to match the actual product name
+Floppy is a task-management chatbot that accepts typed commands through its
+JavaFX conversation window.
 
-// Product screenshot goes here
+## Creating a task to complete within a period
 
-// Product intro goes here
+Use `period` when a task may be completed at any time between two dates.
 
-## Adding deadlines
+Format:
 
-// Describe the action and its outcome.
+`period DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd`
 
-// Give examples of usage
+Example:
 
-Example: `keyword (optional arguments)`
+`period collect certificate /from 2026-09-15 /to 2026-09-25`
 
-// A description of the expected outcome goes here
+Expected response:
 
+```text
+Okies! I've added this task:
+  [P][ ] collect certificate (within: Sep 15 2026 to Sep 25 2026)
+Now you have 1 tasks in the list.
 ```
-expected output
-```
 
-## Feature ABC
+The start and end dates are inclusive. The end date cannot be earlier than the
+start date. Period tasks can be listed, found, marked, unmarked, and deleted in
+the same way as other tasks.
 
-// Feature details
+## Other commands
 
-
-## Feature XYZ
-
-// Feature details
+- `todo DESCRIPTION`
+- `deadline DESCRIPTION /by yyyy-MM-dd`
+- `event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd`
+- `list`
+- `find KEYWORD`
+- `mark TASK_NUMBER`
+- `unmark TASK_NUMBER`
+- `delete TASK_NUMBER`
+- `bye`
