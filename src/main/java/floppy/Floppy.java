@@ -114,6 +114,9 @@ public class Floppy {
      * @throws FloppyException If the task operation or save fails.
      */
     private void execute(Command command, Ui responseUi) throws FloppyException {
+        assert command != null : "A parsed command must be supplied for execution";
+        assert responseUi != null : "Command output requires a user interface";
+
         switch (command.getCommandType()) {
             case LIST -> responseUi.showTaskList(taskList.getTasks());
             case MARK -> {
