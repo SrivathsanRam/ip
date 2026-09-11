@@ -81,6 +81,8 @@ public class Storage {
      * @throws FloppyException If the record has an unknown or invalid format.
      */
     private Task parseTask(String line, int lineNumber) throws FloppyException {
+        assert lineNumber > 0 : "Stored task line numbers must be one-based";
+
         String[] fields = line.split(" \\| ", -1);
         try {
             Task task = switch (fields[0]) {
@@ -111,6 +113,9 @@ public class Storage {
      * @return The supplied task when the record has the correct field count.
      */
     private Task requireFieldCount(String[] fields, int expectedCount, Task task) {
+        assert expectedCount > 0 : "A stored task must contain fields";
+        assert task != null : "A parsed stored task must be constructed before validation";
+
         if (fields.length != expectedCount) {
             throw new IllegalArgumentException();
         }
@@ -124,6 +129,8 @@ public class Storage {
      * @return One-line storage record for the task.
      */
     private String formatTask(Task task) {
+        assert task != null : "The task list must not contain null tasks";
+
         String commonFields = task.getTaskType().getSymbol()
                 + FIELD_SEPARATOR + (task.isDone() ? "1" : "0")
                 + FIELD_SEPARATOR + task.getDescription();

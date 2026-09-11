@@ -53,12 +53,15 @@ public class Parser {
      * @throws FloppyException If the task number is missing or invalid.
      */
     private int parseTaskIndex(String command, String commandWord) throws FloppyException {
+        assert command.startsWith(commandWord) : "The command must begin with its command word";
+
         String argument = command.substring(commandWord.length()).trim();
         try {
             int taskIndex = Integer.parseInt(argument) - 1;
             if (taskIndex < 0) {
                 throw new NumberFormatException();
             }
+            assert taskIndex >= 0 : "A validated task index must be non-negative";
             return taskIndex;
         } catch (NumberFormatException exception) {
             throw new FloppyException("Give me a valid task number after " + commandWord + ".");
@@ -136,6 +139,7 @@ public class Parser {
         if (endDate.isBefore(startDate)) {
             throw new FloppyException("The event end date cannot be before its start date.");
         }
+        assert !endDate.isBefore(startDate) : "A validated event must not end before it starts";
         return new Event(description, startDate, endDate);
     }
 
