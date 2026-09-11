@@ -42,16 +42,9 @@ public class Floppy {
         while (ui.hasNextCommand()) {
             String commandText = ui.readCommand();
             ui.showLine();
-            try {
-                Command command = parser.parse(commandText);
-                if (command.getCommandType() == CommandType.BYE) {
-                    ui.showGoodbye();
-                    ui.showLine();
-                    break;
-                }
-                execute(command, ui);
-            } catch (FloppyException exception) {
-                ui.showError(exception.getMessage());
+            if (!processCommand(commandText, ui)) {
+                ui.showLine();
+                break;
             }
             ui.showLine();
         }
@@ -78,16 +71,7 @@ public class Floppy {
         try (PrintStream responseOutput = new PrintStream(
                 responseBytes, true, StandardCharsets.UTF_8);
                 Ui responseUi = new Ui(new Scanner(""), responseOutput)) {
-            try {
-                Command command = parser.parse(input);
-                if (command.getCommandType() == CommandType.BYE) {
-                    responseUi.showGoodbye();
-                } else {
-                    execute(command, responseUi);
-                }
-            } catch (FloppyException exception) {
-                responseUi.showError(exception.getMessage());
-            }
+            processCommand(input, responseUi);
         }
         return responseBytes.toString(StandardCharsets.UTF_8).strip();
     }
@@ -99,6 +83,27 @@ public class Floppy {
      */
     public String getWelcomeMessage() {
         return "Hello! I'm Floppy.\nWhat can I do for you?";
+    }
+
+    /**
+     * Parses and executes one command using the supplied output interface.
+     *
+     * @param commandText Raw command entered by the user.
+     * @param responseUi User interface that receives the command response.
+     * @return {@code false} for an exit command, or {@code true} otherwise.
+     */
+    private boolean processCommand(String commandText, Ui responseUi) {
+        try {
+            Command command = parser.parse(commandText);
+            if (command.getCommandType() == CommandType.BYE) {
+                responseUi.showGoodbye();
+                return false;
+            }
+            execute(command, responseUi);
+        } catch (FloppyException exception) {
+            responseUi.showError(exception.getMessage());
+        }
+        return true;
     }
 
     /**
