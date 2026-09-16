@@ -91,6 +91,8 @@ public class Storage {
                         new Deadline(fields[2], LocalDate.parse(fields[3])));
                 case "E" -> requireFieldCount(fields, 5,
                         new Event(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4])));
+                case "P" -> requireFieldCount(fields, 5,
+                        new PeriodTask(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4])));
                 default -> throw new IllegalArgumentException();
             };
             if (fields[1].equals("1")) {
@@ -139,6 +141,8 @@ public class Storage {
             case DEADLINE -> commonFields + FIELD_SEPARATOR + ((Deadline) task).getDueDate();
             case EVENT -> commonFields + FIELD_SEPARATOR + ((Event) task).getStartDate()
                     + FIELD_SEPARATOR + ((Event) task).getEndDate();
+            case PERIOD -> commonFields + FIELD_SEPARATOR + ((PeriodTask) task).getStartDate()
+                    + FIELD_SEPARATOR + ((PeriodTask) task).getEndDate();
         };
     }
 }

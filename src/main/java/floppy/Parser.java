@@ -69,7 +69,7 @@ public class Parser {
     }
 
     /**
-     * Parses a todo, deadline, or event command into a task.
+     * Parses a todo, deadline, event, or period command into a task.
      *
      * @param command Full command entered by the user.
      * @return Task represented by the command.
@@ -91,6 +91,9 @@ public class Parser {
         }
         if (command.startsWith("event")) {
             return parseEvent(command);
+        }
+        if (command.startsWith("period")) {
+            return parsePeriodTask(command);
         }
         throw new FloppyException("I don't recognise that command.");
     }
@@ -123,24 +126,56 @@ public class Parser {
      * @throws FloppyException If the description or date range is invalid.
      */
     private Event parseEvent(String command) throws FloppyException {
+        DateRangeDetails details = parseDateRangeDetails(command, "event", "event");
+        return new Event(details.description(), details.startDate(), details.endDate());
+    }
+
+    /**
+     * Parses a period command containing a description and completion range.
+     *
+     * @param command Full period command.
+     * @return Period task represented by the command.
+     * @throws FloppyException If the description or date range is invalid.
+     */
+    private PeriodTask parsePeriodTask(String command) throws FloppyException {
+        DateRangeDetails details = parseDateRangeDetails(command, "period", "period task");
+        return new PeriodTask(details.description(), details.startDate(), details.endDate());
+    }
+
+    /**
+     * Parses and validates the common fields of a date-range task command.
+     *
+     * @param command Full command entered by the user.
+     * @param commandWord Command word that identifies the task type.
+     * @param taskName Human-readable task type used in error messages.
+     * @return Validated description and date range.
+     * @throws FloppyException If a required field or date is invalid.
+     */
+    private DateRangeDetails parseDateRangeDetails(
+            String command, String commandWord, String taskName) throws FloppyException {
         int fromIndex = command.indexOf(" /from ");
         int toIndex = command.indexOf(" /to ", Math.max(fromIndex, 0));
-        if (!command.startsWith("event ") || fromIndex < 0 || toIndex < 0) {
-            throw new FloppyException("Use: event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
+        if (!command.startsWith(commandWord + " ") || fromIndex < 0 || toIndex < 0) {
+            throw new FloppyException(
+                    "Use: " + commandWord + " DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
         }
-        String description = command.substring("event ".length(), fromIndex).trim();
+        String description = command.substring((commandWord + " ").length(), fromIndex).trim();
         String startDateText = command.substring(fromIndex + " /from ".length(), toIndex).trim();
         String endDateText = command.substring(toIndex + " /to ".length()).trim();
         if (description.isEmpty() || startDateText.isEmpty() || endDateText.isEmpty()) {
-            throw new FloppyException("An event needs a description, start date, and end date.");
+            String capitalizedTaskName = Character.toUpperCase(taskName.charAt(0))
+                    + taskName.substring(1);
+            throw new FloppyException(capitalizedTaskName
+                    + " needs a description, start date, and end date.");
         }
         LocalDate startDate = parseDate(startDateText);
         LocalDate endDate = parseDate(endDateText);
         if (endDate.isBefore(startDate)) {
-            throw new FloppyException("The event end date cannot be before its start date.");
+            throw new FloppyException(
+                    "The " + taskName + " end date cannot be before its start date.");
         }
-        assert !endDate.isBefore(startDate) : "A validated event must not end before it starts";
-        return new Event(description, startDate, endDate);
+        assert !endDate.isBefore(startDate) : "A validated date range must not end before it starts";
+        return new DateRangeDetails(description, startDate, endDate);
     }
 
     /**
@@ -156,5 +191,9 @@ public class Parser {
         } catch (DateTimeParseException exception) {
             throw new FloppyException("Use dates in yyyy-MM-dd format, such as 2026-08-28.");
         }
+    }
+
+    /** Holds the validated fields shared by tasks with a start and end date. */
+    private record DateRangeDetails(String description, LocalDate startDate, LocalDate endDate) {
     }
 }
