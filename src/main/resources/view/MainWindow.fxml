@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,11 +13,15 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="floppy.MainWindow">
     <children>
+        <Label styleClass="app-title" text="Floppy"
+               AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="7.0" />
+        <Label styleClass="app-subtitle" text="Your pocket task companion"
+               AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="29.0" />
         <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER"
                     styleClass="chat-scroll"
                     prefHeight="557.0" prefWidth="400.0" vvalue="1.0"
                     AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="52.0">
             <content>
                 <VBox fx:id="dialogContainer" fillWidth="true" prefWidth="388.0"
                       spacing="4.0" styleClass="dialog-container" />
