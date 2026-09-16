@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public class Storage {
                 throw new IllegalArgumentException();
             }
             return task;
-        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException exception) {
+        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException | DateTimeException exception) {
             throw new FloppyException("Saved task data is invalid on line " + lineNumber + ".");
         }
     }

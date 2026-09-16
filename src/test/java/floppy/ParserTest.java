@@ -89,6 +89,21 @@ class ParserTest {
     }
 
     @Test
+    void parse_commandsWithoutTaskData_returnsExpectedTypes() throws FloppyException {
+        assertEquals(CommandType.BYE, parser.parse("  bye  ").getCommandType());
+        assertEquals(CommandType.LIST, parser.parse("list").getCommandType());
+        assertEquals(CommandType.UNMARK, parser.parse("unmark 1").getCommandType());
+        assertEquals(CommandType.DELETE, parser.parse("delete 1").getCommandType());
+    }
+
+    @Test
+    void parse_incompleteDatedCommands_throwException() {
+        assertThrows(FloppyException.class, () -> parser.parse("deadline submit report"));
+        assertThrows(FloppyException.class, () -> parser.parse("event camp /from 2026-09-20"));
+        assertThrows(FloppyException.class, () -> parser.parse("period collect /to 2026-09-21"));
+    }
+
+    @Test
     void parse_commandWordWithoutSeparator_throwsException() {
         assertThrows(FloppyException.class, () -> parser.parse("mark1"));
         assertThrows(FloppyException.class, () -> parser.parse("unmark2"));
