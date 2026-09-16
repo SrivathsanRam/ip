@@ -60,4 +60,22 @@ class StorageTest {
 
         assertThrows(FloppyException.class, storage::load);
     }
+
+    @Test
+    void load_unknownTaskType_throwsException() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "Z | 0 | unknown");
+        Storage storage = new Storage(dataFile.toString());
+
+        assertThrows(FloppyException.class, storage::load);
+    }
+
+    @Test
+    void load_invalidDate_throwsException() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "D | 0 | submit report | 2026-02-30");
+        Storage storage = new Storage(dataFile.toString());
+
+        assertThrows(FloppyException.class, storage::load);
+    }
 }

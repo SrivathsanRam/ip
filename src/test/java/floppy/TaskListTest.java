@@ -1,6 +1,8 @@
 package floppy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -40,5 +42,37 @@ class TaskListTest {
     @Test
     void find_absentKeyword_returnsEmptyList() {
         assertTrue(taskList.find("homework").isEmpty());
+    }
+
+    @Test
+    void addMarkUnmarkDelete_validIndexes_updatesList() throws FloppyException {
+        taskList.add(new Todo("buy milk"));
+        assertEquals(4, taskList.size());
+
+        Task markedTask = taskList.mark(3);
+        assertTrue(markedTask.isDone());
+
+        Task unmarkedTask = taskList.unmark(3);
+        assertFalse(unmarkedTask.isDone());
+
+        Task deletedTask = taskList.delete(3);
+        assertEquals("buy milk", deletedTask.getDescription());
+        assertEquals(3, taskList.size());
+    }
+
+    @Test
+    void indexedOperations_invalidIndexes_throwException() {
+        assertThrows(FloppyException.class, () -> taskList.mark(-1));
+        assertThrows(FloppyException.class, () -> taskList.unmark(3));
+        assertThrows(FloppyException.class, () -> taskList.delete(10));
+    }
+
+    @Test
+    void getTasks_returnedSnapshot_cannotModifyTaskList() {
+        List<Task> snapshot = taskList.getTasks();
+
+        assertThrows(UnsupportedOperationException.class, () ->
+                snapshot.add(new Todo("unexpected task")));
+        assertEquals(3, taskList.size());
     }
 }

@@ -20,8 +20,12 @@ public class Floppy {
      * Creates a chatbot backed by the default task data file.
      */
     public Floppy() {
+        this(DATA_FILE_PATH);
+    }
+
+    Floppy(String dataFilePath) {
         parser = new Parser();
-        storage = new Storage(DATA_FILE_PATH);
+        storage = new Storage(dataFilePath);
         ui = new Ui();
 
         TaskList loadedTasks;
