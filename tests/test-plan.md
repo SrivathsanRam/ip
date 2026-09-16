@@ -30,3 +30,12 @@
 3. Enter `list` and verify that Floppy's response appears on the left with its
    icon, while the user's command appears as a compact bubble on the right.
 4. Enter `dance` and verify that the error appears in a distinct red style.
+
+## Reject malformed command words and reserved characters
+
+1. Enter `mark1`, `unmark2`, and `delete3` separately.
+2. Verify that each input is rejected instead of being treated as an indexed
+   command.
+3. Enter `todo read | write`.
+4. Verify that Floppy explains that `|` is reserved by the storage format and
+   does not add the task.

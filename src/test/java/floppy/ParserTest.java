@@ -87,4 +87,26 @@ class ParserTest {
     void parse_findWithoutKeyword_throwsException() {
         assertThrows(FloppyException.class, () -> parser.parse("find"));
     }
+
+    @Test
+    void parse_commandWordWithoutSeparator_throwsException() {
+        assertThrows(FloppyException.class, () -> parser.parse("mark1"));
+        assertThrows(FloppyException.class, () -> parser.parse("unmark2"));
+        assertThrows(FloppyException.class, () -> parser.parse("delete3"));
+    }
+
+    @Test
+    void parse_descriptionWithStorageSeparator_throwsException() {
+        assertThrows(FloppyException.class, () -> parser.parse("todo read | write"));
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "deadline read | write /by 2026-09-20"));
+    }
+
+    @Test
+    void parse_duplicateDateMarkers_throwsException() {
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "deadline submit /by 2026-09-20 /by 2026-09-21"));
+        assertThrows(FloppyException.class, () -> parser.parse(
+                "period collect /from 2026-09-20 /from 2026-09-21 /to 2026-09-22"));
+    }
 }

@@ -32,11 +32,10 @@ public class Storage {
      * @throws FloppyException If the file cannot be read or contains invalid data.
      */
     public ArrayList<Task> load() throws FloppyException {
-        if (Files.notExists(filePath)) {
-            return new ArrayList<>();
-        }
-
         try {
+            if (Files.notExists(filePath)) {
+                return new ArrayList<>();
+            }
             List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
             ArrayList<Task> tasks = new ArrayList<>();
             for (int i = 0; i < lines.size(); i++) {
@@ -45,7 +44,7 @@ public class Storage {
                 }
             }
             return tasks;
-        } catch (IOException exception) {
+        } catch (IOException | SecurityException exception) {
             throw new FloppyException("I couldn't read the saved tasks.");
         }
     }
@@ -67,7 +66,7 @@ public class Storage {
                 lines.add(formatTask(task));
             }
             Files.write(filePath, lines, StandardCharsets.UTF_8);
-        } catch (IOException exception) {
+        } catch (IOException | SecurityException exception) {
             throw new FloppyException("I couldn't save the task list.");
         }
     }

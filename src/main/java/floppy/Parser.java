@@ -22,13 +22,13 @@ public class Parser {
         if (command.equals("list")) {
             return new Command(CommandType.LIST);
         }
-        if (command.startsWith("mark")) {
+        if (isCommand(command, "mark")) {
             return new Command(CommandType.MARK, parseTaskIndex(command, "mark"));
         }
-        if (command.startsWith("unmark")) {
+        if (isCommand(command, "unmark")) {
             return new Command(CommandType.UNMARK, parseTaskIndex(command, "unmark"));
         }
-        if (command.startsWith("delete")) {
+        if (isCommand(command, "delete")) {
             return new Command(CommandType.DELETE, parseTaskIndex(command, "delete"));
         }
         if (command.equals("find")) {
@@ -79,20 +79,21 @@ public class Parser {
         if (command.equals("todo")) {
             throw new FloppyException("The todo description cannot be empty.");
         }
-        if (command.startsWith("todo ")) {
+        if (isCommand(command, "todo")) {
             String description = command.substring("todo ".length()).trim();
             if (description.isEmpty()) {
                 throw new FloppyException("The todo description cannot be empty.");
             }
+            validateDescription(description);
             return new Todo(description);
         }
-        if (command.startsWith("deadline")) {
+        if (isCommand(command, "deadline")) {
             return parseDeadline(command);
         }
-        if (command.startsWith("event")) {
+        if (isCommand(command, "event")) {
             return parseEvent(command);
         }
-        if (command.startsWith("period")) {
+        if (isCommand(command, "period")) {
             return parsePeriodTask(command);
         }
         throw new FloppyException("I don't recognise that command.");
@@ -110,11 +111,15 @@ public class Parser {
         if (!command.startsWith("deadline ") || byIndex < 0) {
             throw new FloppyException("Use: deadline DESCRIPTION /by yyyy-MM-dd.");
         }
+        if (command.indexOf(" /by ", byIndex + " /by ".length()) >= 0) {
+            throw new FloppyException("A deadline accepts exactly one /by date.");
+        }
         String description = command.substring("deadline ".length(), byIndex).trim();
         String dueDateText = command.substring(byIndex + " /by ".length()).trim();
         if (description.isEmpty() || dueDateText.isEmpty()) {
             throw new FloppyException("A deadline needs both a description and due date.");
         }
+        validateDescription(description);
         return new Deadline(description, parseDate(dueDateText));
     }
 
@@ -159,6 +164,11 @@ public class Parser {
             throw new FloppyException(
                     "Use: " + commandWord + " DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
         }
+        if (command.indexOf(" /from ", fromIndex + " /from ".length()) >= 0
+                || command.indexOf(" /to ", toIndex + " /to ".length()) >= 0) {
+            throw new FloppyException(
+                    "The " + taskName + " command accepts exactly one /from date and one /to date.");
+        }
         String description = command.substring((commandWord + " ").length(), fromIndex).trim();
         String startDateText = command.substring(fromIndex + " /from ".length(), toIndex).trim();
         String endDateText = command.substring(toIndex + " /to ".length()).trim();
@@ -168,6 +178,7 @@ public class Parser {
             throw new FloppyException(capitalizedTaskName
                     + " needs a description, start date, and end date.");
         }
+        validateDescription(description);
         LocalDate startDate = parseDate(startDateText);
         LocalDate endDate = parseDate(endDateText);
         if (endDate.isBefore(startDate)) {
@@ -190,6 +201,29 @@ public class Parser {
             return LocalDate.parse(dateText);
         } catch (DateTimeParseException exception) {
             throw new FloppyException("Use dates in yyyy-MM-dd format, such as 2026-08-28.");
+        }
+    }
+
+    /**
+     * Returns whether an input contains the specified complete command word.
+     *
+     * @param command Trimmed command entered by the user.
+     * @param commandWord Command word to match.
+     * @return {@code true} if the input is the command word with optional arguments.
+     */
+    private boolean isCommand(String command, String commandWord) {
+        return command.equals(commandWord) || command.startsWith(commandWord + " ");
+    }
+
+    /**
+     * Rejects descriptions that cannot be represented by the storage format.
+     *
+     * @param description Task description to validate.
+     * @throws FloppyException If the description contains a reserved separator.
+     */
+    private void validateDescription(String description) throws FloppyException {
+        if (description.contains("|")) {
+            throw new FloppyException("Task descriptions cannot contain the | character.");
         }
     }
 
