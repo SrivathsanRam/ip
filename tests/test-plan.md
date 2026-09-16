@@ -22,3 +22,11 @@
    - `period collect certificate /from 2026-09-15`
 2. Verify that each command displays the required command format and does not
    add a task.
+
+## Responsive and differentiated conversations
+
+1. Resize the Floppy window both wider and taller.
+2. Verify that the conversation area and text bubbles grow with the window.
+3. Enter `list` and verify that Floppy's response appears on the left with its
+   icon, while the user's command appears as a compact bubble on the right.
+4. Enter `dance` and verify that the error appears in a distinct red style.
