@@ -61,9 +61,12 @@ public class MainWindow extends AnchorPane {
         }
 
         String response = floppy.getResponse(input);
+        DialogBox responseDialog = response.startsWith("Oops!")
+                ? DialogBox.getErrorDialog(response, floppyImage)
+                : DialogBox.getFloppyDialog(response, floppyImage);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getFloppyDialog(response, floppyImage));
+                responseDialog);
         userInput.clear();
 
         if (input.equals("bye")) {
