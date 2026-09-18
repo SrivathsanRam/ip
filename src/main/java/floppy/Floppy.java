@@ -86,7 +86,7 @@ public class Floppy {
      * @return Initial chatbot greeting.
      */
     public String getWelcomeMessage() {
-        return "Hello! I'm Floppy.\nWhat can I do for you?";
+        return Ui.getWelcomeMessage();
     }
 
     /**

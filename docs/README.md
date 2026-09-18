@@ -2,9 +2,10 @@
 
 ![Floppy's conversation window](Ui.png)
 
-Floppy is a friendly desktop task manager for people who prefer entering short,
-precise commands. It remembers your tasks between sessions and supports todos,
-deadlines, events, and tasks that can be completed within a date range.
+Floppy is a cheerful, carrot-loving desktop task manager for people who prefer
+entering short, precise commands. It remembers your tasks between sessions and
+supports todos, deadlines, events, and tasks that can be completed within a
+date range.
 
 ## Quick start
 

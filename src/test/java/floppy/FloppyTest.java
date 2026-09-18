@@ -27,6 +27,14 @@ class FloppyTest {
         String response = floppy.getResponse("bye");
 
         assertTrue(response.contains("Bye. Hope to see you again soon!"));
+        assertTrue(response.contains("carrot"));
+    }
+
+    @Test
+    void getWelcomeMessage_containsCarrotLovingPersonality() {
+        Floppy floppy = new Floppy();
+
+        assertTrue(floppy.getWelcomeMessage().contains("carrots"));
     }
 
     @Test
@@ -35,7 +43,9 @@ class FloppyTest {
         Floppy floppy = new Floppy(dataFile.toString());
 
         assertTrue(floppy.getResponse("todo read book").contains("[T][ ] read book"));
-        assertTrue(floppy.getResponse("mark 1").contains("[T][X] read book"));
+        String markResponse = floppy.getResponse("mark 1");
+        assertTrue(markResponse.contains("[T][X] read book"));
+        assertTrue(markResponse.contains("celebratory carrot"));
         assertTrue(floppy.getResponse("find BOOK").contains("[T][X] read book"));
 
         Floppy reloadedFloppy = new Floppy(dataFile.toString());

@@ -8,6 +8,7 @@ import java.util.Scanner;
  * Handles all console input and output for the chatbot.
  */
 public class Ui implements AutoCloseable {
+    private static final int CARROT_REMARK_INTERVAL = 3;
     private static final String DIVIDER = "____________________________________________________________";
     private static final String BANNER = " _____ _                         \n"
             + "|  ___| | ___  _ __  _ __  _   _\n"
@@ -54,9 +55,19 @@ public class Ui implements AutoCloseable {
      */
     public void showWelcome() {
         output.println(BANNER);
-        output.println("Hello! I'm Floppy.");
-        output.println("What can I do for you?");
+        output.println(getWelcomeMessage());
         showLine();
+    }
+
+    /**
+     * Returns the greeting shared by the console and graphical interfaces.
+     *
+     * @return Floppy's welcome message.
+     */
+    static String getWelcomeMessage() {
+        return "Hello! I'm Floppy.\n"
+                + "I keep tasks tidy and carrots close.\n"
+                + "What can I do for you?";
     }
 
     /**
@@ -64,6 +75,7 @@ public class Ui implements AutoCloseable {
      */
     public void showGoodbye() {
         output.println(" Bye. Hope to see you again soon!");
+        output.println(" I'll be nibbling a carrot until then.");
     }
 
     /**
@@ -114,6 +126,9 @@ public class Ui implements AutoCloseable {
         output.println(" Okies! I've added this task:");
         output.println("   " + task);
         output.println(" Now you have " + taskCount + " tasks in the list.");
+        if (taskCount % CARROT_REMARK_INTERVAL == 0) {
+            output.println(" That's a tidy little crop of tasks. Time for a carrot!");
+        }
     }
 
     /**
@@ -136,6 +151,7 @@ public class Ui implements AutoCloseable {
     public void showTaskMarked(Task task) {
         output.println(" Nice! I've marked this task as done:");
         output.println("   " + task);
+        output.println(" That deserves a celebratory carrot!");
     }
 
     /**
