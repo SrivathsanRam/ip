@@ -15,7 +15,7 @@ public class MainWindow extends AnchorPane {
     private final Image userImage = new Image(
             MainWindow.class.getResourceAsStream("/images/DaUser.png"));
     private final Image floppyImage = new Image(
-            MainWindow.class.getResourceAsStream("/images/DaFloppy.png"));
+            MainWindow.class.getResourceAsStream("/images/bunny_pfp_png.png"));
 
     @FXML
     private ScrollPane scrollPane;

@@ -49,8 +49,6 @@ public class DialogBox extends HBox {
     public static DialogBox getUserDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.getStyleClass().add("user-dialog");
-        dialogBox.displayPicture.setManaged(false);
-        dialogBox.displayPicture.setVisible(false);
         return dialogBox;
     }
 
